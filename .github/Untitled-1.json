@@ -1,0 +1,7 @@
+{
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "Use GitHub MCP for repository operations"
+    }
+  ]
+}
