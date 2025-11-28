@@ -44,7 +44,6 @@ VERCEL_PROJECT_ID     # Vercel Project ID
 1. Vercel Token erstellen: https://vercel.com/account/tokens
 2. Projekt-IDs abrufen:
    ```bash
-   cd /mnt/c/Users/gummi/Documents/wetterpendelnwebappmain
    vercel link
    cat .vercel/project.json
    ```
@@ -72,7 +71,7 @@ Wöchentliche Überprüfung veralteter Dependencies.
 
 ## 🚀 Setup-Anleitung
 
-### Vercel Deployment aktivieren:
+### Vercel Deployment aktivieren
 
 ```bash
 # In WSL Ubuntu
