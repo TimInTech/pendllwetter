@@ -173,7 +173,7 @@ export function RadarView({ settings: _settings }: RadarViewProps) {
             role="img"
             aria-label="Legende: Niederschlagsintensität von leicht (blau) bis stark (magenta)"
           >
-            <p className="text-xs text-slate-400 mb-2" id="legend-label">Niederschlagsintensitaet</p>
+            <p className="text-xs text-slate-400 mb-2" id="legend-label">Niederschlagsintensität</p>
             <div className="flex items-center gap-1" aria-labelledby="legend-label">
               <div className="flex-1 h-3 rounded-full overflow-hidden flex">
                 <div className="flex-1 bg-[#88f]" title="Sehr leicht" />
