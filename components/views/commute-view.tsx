@@ -19,6 +19,7 @@ import {
   Snowflake,
 } from "lucide-react"
 import { WeatherResults } from "@/components/weather-results"
+import { RideabilityLegend } from "@/components/rideability-legend"
 import { fetchWeatherData, geocodeLocation } from "@/lib/weather-api"
 import { findRelevantSlots } from "@/lib/slot-logic"
 import { evaluateRideability } from "@/lib/rideability"
@@ -317,11 +318,14 @@ export function CommuteView({ settings, onSettingsChange }: CommuteViewProps) {
 
       {/* Results */}
       {results.length > 0 && (
-        <WeatherResults
-          results={results}
-          startOrt={startOrtName || settings.startOrt}
-          zielOrt={zielOrtName || settings.zielOrt}
-        />
+        <>
+          <WeatherResults
+            results={results}
+            startOrt={startOrtName || settings.startOrt}
+            zielOrt={zielOrtName || settings.zielOrt}
+          />
+          <RideabilityLegend compact />
+        </>
       )}
     </div>
   )
