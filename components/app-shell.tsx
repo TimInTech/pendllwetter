@@ -107,7 +107,7 @@ export function AppShell() {
                   <button
                     key={tab.id}
                     role="tab"
-                    aria-selected={isActive}
+                    aria-selected={isActive ? true : false}
                     aria-controls={`panel-${tab.id}`}
                     id={`tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
