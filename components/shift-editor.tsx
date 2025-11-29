@@ -60,18 +60,6 @@ export function ShiftEditor({ shifts, onShiftsChange }: ShiftEditorProps) {
     setEditForm(null)
   }
 
-  const TimeInput = ({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) => (
-    <div className="space-y-1">
-      <Label className="text-xs text-slate-400">{label}</Label>
-      <Input
-        type="time"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="bg-white/5 border-white/10 text-slate-200 focus:border-cyan-500/50 focus:ring-cyan-500/20 min-h-[44px]"
-      />
-    </div>
-  )
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -226,6 +214,26 @@ export function ShiftEditor({ shifts, onShiftsChange }: ShiftEditorProps) {
           </Card>
         ))}
       </div>
+    </div>
+  )
+}
+
+interface TimeInputProps {
+  value: string
+  onChange: (value: string) => void
+  label: string
+}
+
+function TimeInput({ value, onChange, label }: TimeInputProps) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-xs text-slate-400">{label}</Label>
+      <Input
+        type="time"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="bg-white/5 border-white/10 text-slate-200 focus:border-cyan-500/50 focus:ring-cyan-500/20 min-h-[44px]"
+      />
     </div>
   )
 }

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   MapPin,
-  Navigation,
   Loader2,
   Thermometer,
   Droplets,
@@ -23,7 +22,6 @@ import {
   CloudDrizzle,
   CloudSun,
   CloudMoon,
-  Bike,
   AlertCircle,
 } from "lucide-react"
 import {
@@ -85,7 +83,7 @@ export function NowView({ settings }: NowViewProps) {
     }
   }, [location.lat, location.lon, loadWeather])
 
-  const getCurrentShift = () => {
+  const getCurrentShift = useCallback(() => {
     const now = new Date()
     const currentMinutes = now.getHours() * 60 + now.getMinutes()
 
@@ -111,7 +109,7 @@ export function NowView({ settings }: NowViewProps) {
       return { shift: settings.shifts[0], direction: "Hinfahrt" }
     }
     return null
-  }
+  }, [settings.shifts])
 
   const handleCheckNow = async () => {
     clearError()
@@ -186,7 +184,7 @@ export function NowView({ settings }: NowViewProps) {
         })
       }
     }
-  }, [currentWeather, location, settings.shifts, commuteCheck])
+  }, [commuteCheck, currentWeather, getCurrentShift, location])
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) return
@@ -250,12 +248,14 @@ export function NowView({ settings }: NowViewProps) {
               </>
             ) : (
               <>
-                <Bike className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
-                Standort per GPS ermitteln & prüfen
+                <span className="text-lg sm:text-xl mr-2 sm:mr-3">📍</span>
+                Standort per GPS ermitteln
               </>
             )}
           </Button>
-          <p className="text-center text-xs sm:text-sm text-slate-400 mt-3">GPS-Standort + automatische Schichterkennung</p>
+          <p className="text-center text-xs sm:text-sm text-slate-400 mt-3">
+            Ein Klick löst einmalig die GPS-Abfrage aus und startet den Sofortcheck.
+          </p>
         </CardContent>
       </Card>
 
@@ -280,16 +280,6 @@ export function NowView({ settings }: NowViewProps) {
       {/* Location Selector */}
       <Card className="bg-white/5 backdrop-blur-xl border-white/10">
         <CardContent className="pt-4 space-y-3">
-          <Button
-            onClick={updateFromGPS}
-            disabled={gpsLoading}
-            variant="outline"
-            className="w-full bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-cyan-500/30 min-h-[48px]"
-          >
-            {gpsLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Navigation className="h-5 w-5 mr-2" />}
-            Aktueller Standort
-          </Button>
-
           <div className="relative">
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -431,9 +421,8 @@ export function NowView({ settings }: NowViewProps) {
                     return (
                       <div
                         key={idx}
-                        className={`flex flex-col items-center p-2 sm:p-3 rounded-xl min-w-[60px] sm:min-w-[70px] transition-colors ${
-                          hasRain ? "bg-blue-500/10 border border-blue-500/20" : "bg-white/5"
-                        }`}
+                        className={`flex flex-col items-center p-2 sm:p-3 rounded-xl min-w-[60px] sm:min-w-[70px] transition-colors ${hasRain ? "bg-blue-500/10 border border-blue-500/20" : "bg-white/5"
+                          }`}
                       >
                         <p className="text-[10px] sm:text-xs text-slate-400 mb-1.5 sm:mb-2">
                           {time.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}

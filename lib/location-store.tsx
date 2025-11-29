@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react"
 
 export type LocationSource = "gps" | "manual"
 
@@ -37,6 +37,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   const [location, setLocation] = useState<LocationState>(DEFAULT_LOCATION)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const gpsRequestRef = useRef<Promise<LocationState | null> | null>(null)
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -74,6 +75,10 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   }, [location])
 
   const updateFromGPS = useCallback(async (): Promise<LocationState | null> => {
+    if (gpsRequestRef.current) {
+      return gpsRequestRef.current
+    }
+
     if (!navigator.geolocation) {
       setError("Geolocation wird von Ihrem Browser nicht unterstützt.")
       return null
@@ -82,7 +87,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
     setIsLoading(true)
     setError(null)
 
-    return new Promise((resolve) => {
+    gpsRequestRef.current = new Promise((resolve) => {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords
@@ -108,6 +113,7 @@ export function LocationProvider({ children }: { children: ReactNode }) {
 
           setLocation(newLocation)
           setIsLoading(false)
+          gpsRequestRef.current = null
           resolve(newLocation)
         },
         (err) => {
@@ -127,11 +133,14 @@ export function LocationProvider({ children }: { children: ReactNode }) {
             default:
               setError("Ein unbekannter Fehler ist aufgetreten.")
           }
+          gpsRequestRef.current = null
           resolve(null)
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
       )
     })
+
+    return gpsRequestRef.current
   }, [])
 
   const updateManual = useCallback((lat: number, lon: number, label: string) => {
