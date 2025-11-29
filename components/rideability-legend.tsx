@@ -32,7 +32,7 @@ export function RideabilityLegend({ compact = false }: RideabilityLegendProps) {
       label: "Kritisch",
       color: "text-orange-400",
       bg: "bg-orange-500/10",
-      criteria: "Wind 43-58 km/h oder Regen 2-5 mm/h oder Regenwahrsch. 60-80% oder Temperatur 0 bis -3°C",
+      criteria: "Wind 43-58 km/h oder Regen 2-5 mm/h oder Regenwahrsch. 60-80% oder Temperatur -3°C bis 0°C",
     },
     {
       emoji: "🔴",
