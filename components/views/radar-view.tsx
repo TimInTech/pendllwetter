@@ -36,8 +36,8 @@ export function RadarView({ settings: _settings }: RadarViewProps) {
 
   const externalLinks = [
     {
-      label: "DWD RegenRadar",
-      href: "https://www.dwd.de/DE/wetter/radar/radarlage_node.html",
+      label: "DWD (Website, Radar im Menü)",
+      href: "https://www.dwd.de/DE/Home/home_node.html",
     },
     {
       label: "KachelmannRadar",
@@ -45,11 +45,11 @@ export function RadarView({ settings: _settings }: RadarViewProps) {
     },
     {
       label: "RegenRadar (WetterOnline)",
-      href: `https://www.wetteronline.de/niederschlagsradar?lat=${latString}&lon=${lonString}`,
+      href: "https://www.wetteronline.de/niederschlagsradar",
     },
     {
       label: "RainViewer",
-      href: `https://www.rainviewer.com/map.html?loc=${coordString},7`,
+      href: `https://www.rainviewer.com/map.html?loc=${coordString},7&oCS=1&oAP=1&c=3&o=83&lm=1&layer=radar&sm=1&sn=1`,
     },
   ]
 
