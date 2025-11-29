@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Cloud, Bike, MapPin, Settings, Database, Coffee, Globe } from "lucide-react"
 import { NowView } from "@/components/views/now-view"
 import { CommuteView } from "@/components/views/commute-view"
 import { RadarView } from "@/components/views/radar-view"
 import { SettingsView } from "@/components/views/settings-view"
-import { loadSettings, saveSettings, DEFAULT_SETTINGS } from "@/lib/storage"
+import { loadSettings, saveSettings } from "@/lib/storage"
 import { LocationProvider } from "@/lib/location-store"
 import type { Settings as AppSettings } from "@/lib/types"
 
@@ -21,13 +21,7 @@ const tabs = [
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<TabId>("jetzt")
-  const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS)
-
-  // Load settings on mount
-  useEffect(() => {
-    const saved = loadSettings()
-    setSettings(saved)
-  }, [])
+  const [settings, setSettings] = useState<AppSettings>(() => loadSettings())
 
   // Save settings when changed
   const updateSettings = (updates: Partial<AppSettings>) => {
@@ -49,10 +43,10 @@ export function AppShell() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-400 hover:text-amber-400 border border-white/10 hover:border-amber-500/30 rounded-lg transition-all duration-300 min-h-[40px]"
-                aria-label="Projekt unterst\u00fctzen"
+                aria-label="Buy me a coffee"
               >
                 <Coffee className="h-4 w-4" />
-                <span className="hidden sm:inline">Unterst\u00fctzen</span>
+                <span className="hidden sm:inline">Buy me a coffee</span>
               </a>
 
               {/* Center: Logo */}
@@ -73,14 +67,14 @@ export function AppShell() {
 
               {/* Right: Website Button */}
               <a
-                href="https://timinrech.de"
+                href="https://timintech.de"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-400 hover:text-cyan-400 border border-white/10 hover:border-cyan-500/30 rounded-lg transition-all duration-300 min-h-[40px]"
-                aria-label="Website besuchen"
+                aria-label="timintech.de \u00f6ffnen"
               >
                 <Globe className="h-4 w-4" />
-                <span className="hidden sm:inline">Website</span>
+                <span className="hidden sm:inline">timintech.de</span>
               </a>
             </div>
           </div>
@@ -117,9 +111,8 @@ export function AppShell() {
                     aria-controls={`panel-${tab.id}`}
                     id={`tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col items-center justify-center min-w-[60px] sm:min-w-[72px] min-h-[52px] px-2 sm:px-3 py-1.5 rounded-xl transition-all duration-300 ${
-                      isActive ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                    }`}
+                    className={`flex flex-col items-center justify-center min-w-[60px] sm:min-w-[72px] min-h-[52px] px-2 sm:px-3 py-1.5 rounded-xl transition-all duration-300 ${isActive ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                      }`}
                   >
                     <Icon className={`h-5 w-5 sm:h-6 sm:w-6 mb-0.5 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
                     <span className="text-[10px] sm:text-xs font-medium">{tab.label}</span>
