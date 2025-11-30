@@ -1,20 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { Cloud, Activity, MapPin, Settings, Database, Coffee, Globe, Bike } from "lucide-react"
+import { Cloud, MapPin, Settings, Database, Coffee, Globe, Bike, Wind } from "lucide-react"
 import { NowView } from "@/components/views/now-view"
-import { ActivitiesView } from "@/components/views/activities-view"
+import { CommuteView } from "@/components/views/commute-view"
+import { ParaglidingViewPro } from "@/components/views/paragliding-view-pro"
 import { RadarView } from "@/components/views/radar-view"
 import { SettingsView } from "@/components/views/settings-view"
 import { loadSettings, saveSettings } from "@/lib/storage"
 import { LocationProvider } from "@/lib/location-store"
 import type { Settings as AppSettings } from "@/lib/types"
 
-type TabId = "übersicht" | "aktivitäten" | "radar" | "einstellungen"
+type TabId = "übersicht" | "pendelwetter" | "gleitschirmwetter" | "radar" | "einstellungen"
 
 const tabs = [
   { id: "übersicht" as const, label: "Übersicht", icon: Cloud },
-  { id: "aktivitäten" as const, label: "Aktivitäten", icon: Activity },
+  { id: "pendelwetter" as const, label: "Pendeln", icon: Bike },
+  { id: "gleitschirmwetter" as const, label: "Gleitschirm", icon: Wind },
   { id: "radar" as const, label: "Radar", icon: MapPin },
   { id: "einstellungen" as const, label: "Einstellungen", icon: Settings },
 ]
@@ -83,18 +85,19 @@ export function AppShell() {
         {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-6 pb-24 overflow-x-hidden">
           {activeTab === "übersicht" && <NowView settings={settings} onNavigate={setActiveTab} />}
-          {activeTab === "aktivitäten" && <ActivitiesView settings={settings} onSettingsChange={updateSettings} />}
+          {activeTab === "pendelwetter" && <CommuteView settings={settings} onSettingsChange={updateSettings} />}
+          {activeTab === "gleitschirmwetter" && <ParaglidingViewPro />}
           {activeTab === "radar" && <RadarView settings={settings} />}
           {activeTab === "einstellungen" && <SettingsView settings={settings} onSettingsChange={updateSettings} />}
         </main>
 
-        {/* Bottom Navigation - Mobile Optimized */}
+        {/* Bottom Navigation - Mobile Optimized for 5 Tabs */}
         <nav
           className="fixed bottom-0 left-0 right-0 z-50 bg-[#04102B]/90 backdrop-blur-xl border-t border-white/10 safe-area-inset-bottom"
           role="navigation"
           aria-label="Hauptnavigation"
         >
-          <div className="container mx-auto px-1 sm:px-2">
+          <div className="container mx-auto px-0.5 sm:px-2">
             <div
               className="flex justify-around items-center py-1.5"
               role="tablist"
@@ -111,11 +114,14 @@ export function AppShell() {
                     aria-controls={`panel-${tab.id}`}
                     id={`tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col items-center justify-center min-w-[60px] sm:min-w-[72px] min-h-[52px] px-2 sm:px-3 py-1.5 rounded-xl transition-all duration-300 ${isActive ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
-                      }`}
+                    className={`flex flex-col items-center justify-center min-w-[52px] sm:min-w-[72px] min-h-[52px] px-1 sm:px-3 py-1.5 rounded-xl transition-all duration-300 ${
+                      isActive
+                        ? "bg-cyan-500/20 text-cyan-400"
+                        : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                    }`}
                   >
                     <Icon className={`h-5 w-5 sm:h-6 sm:w-6 mb-0.5 transition-transform duration-300 ${isActive ? "scale-110" : ""}`} />
-                    <span className="text-[10px] sm:text-xs font-medium">{tab.label}</span>
+                    <span className="text-[9px] sm:text-xs font-medium leading-tight text-center">{tab.label}</span>
                   </button>
                 )
               })}

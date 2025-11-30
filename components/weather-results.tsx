@@ -24,15 +24,15 @@ export function WeatherResults({ results, startOrt, zielOrt }: WeatherResultsPro
 
   return (
     <div className="space-y-8">
-      <h2 className="text-2xl font-semibold text-slate-200 flex items-center gap-3">
-        <CloudRain className="h-6 w-6 text-cyan-400" />
+      <h2 className="text-xl sm:text-2xl font-semibold text-slate-200 flex items-center gap-2 sm:gap-3">
+        <CloudRain className="h-5 w-5 sm:h-6 sm:w-6 text-cyan-400" />
         Wettervorhersage
       </h2>
 
       {Object.entries(groupedByDate).map(([date, slots]) => (
         <div key={date} className="space-y-4">
-          <h3 className="text-lg font-medium text-slate-300 border-b border-white/10 pb-3">{formatDateHeader(date)}</h3>
-          <div className="grid gap-4 md:grid-cols-2">
+          <h3 className="text-base sm:text-lg font-medium text-slate-300 border-b border-white/10 pb-2 sm:pb-3">{formatDateHeader(date)}</h3>
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {slots.map((slot, idx) => (
               <WeatherCard key={`${date}-${slot.type}-${idx}`} slot={slot} startOrt={startOrt} zielOrt={zielOrt} />
             ))}
@@ -79,68 +79,80 @@ function WeatherCard({
 
   return (
     <Card className={`${cardStyles} backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-xl group`}>
-      <CardContent className="pt-5 space-y-4">
-        {/* Route Header */}
-        <div className="flex items-center gap-2 text-slate-200 font-medium">
-          <span className="text-emerald-400">{from}</span>
-          <ArrowRight className="h-4 w-4 text-slate-500" />
-          <span className="text-rose-400">{to}</span>
+      <CardContent className="pt-4 pb-4 px-4 sm:pt-5 sm:pb-5 sm:px-5 space-y-3 sm:space-y-4">
+        {/* Route Header - kompakter */}
+        <div className="flex items-center gap-1.5 sm:gap-2 text-slate-200 text-sm sm:text-base font-medium">
+          <span className="text-emerald-400 truncate">{from}</span>
+          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-slate-500 flex-shrink-0" />
+          <span className="text-rose-400 truncate">{to}</span>
         </div>
 
         {/* Shift & Type */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-300">{slot.shiftName}</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs sm:text-sm font-medium text-slate-300 truncate">{slot.shiftName}</span>
           <span
-            className={`text-sm px-3 py-1 rounded-full ${slot.type === "hin" ? "bg-cyan-500/20 text-cyan-400" : "bg-purple-500/20 text-purple-400"}`}
+            className={`text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded-full whitespace-nowrap ${
+              slot.type === "hin" ? "bg-cyan-500/20 text-cyan-400" : "bg-purple-500/20 text-purple-400"
+            }`}
           >
             {typeLabel}
           </span>
         </div>
 
-        <div className="text-sm text-slate-400">Zeit: {displayTime} Uhr</div>
+        {/* Zeit - kompakter */}
+        <div className="text-xs sm:text-sm text-slate-400">Zeit: {displayTime} Uhr</div>
 
-        <div className="bg-white/5 rounded-xl p-4 space-y-3 border border-white/5">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">{weatherEmoji}</span>
-            <div>
-              <p className="font-medium text-slate-200 text-lg">
+        {/* Wetter-Box - kompakter */}
+        <div className="bg-white/5 rounded-xl p-3 sm:p-4 space-y-2 sm:space-y-3 border border-white/5">
+          <div className="flex items-start gap-2 sm:gap-3">
+            <span className="text-2xl sm:text-3xl leading-none">{weatherEmoji}</span>
+            <div className="min-w-0">
+              <p className="font-medium text-slate-200 text-sm sm:text-lg leading-tight">
                 {slot.description}, {slot.temp.toFixed(1)} °C
               </p>
-              <p className="text-sm text-slate-400 flex items-center gap-1">
+              <p className="text-xs sm:text-sm text-slate-400 flex items-center gap-1 mt-0.5">
                 <Thermometer className="h-3 w-3" />
                 gefühlt {slot.feelsLike.toFixed(1)} °C
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center gap-2 text-slate-400">
-              <Droplets className="h-4 w-4 text-blue-400" />
-              <span>{Math.round(slot.pop * 100)} % Regen</span>
+          {/* Metrics Grid - kompakter auf Mobile */}
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs sm:text-sm">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <Droplets className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
+              <span className="truncate">{Math.round(slot.pop * 100)}% Regen</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-400">
-              <CloudRain className="h-4 w-4 text-blue-400" />
-              <span>{slot.rain.toFixed(1)} mm/h</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <CloudRain className="h-3 w-3 sm:h-4 sm:w-4 text-blue-400 flex-shrink-0" />
+              <span className="truncate">{slot.rain.toFixed(1)} mm/h</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-400">
-              <Wind className="h-4 w-4 text-cyan-400" />
-              <span>
-                {slot.windSpeed.toFixed(0)} km/h aus {windDir}
-              </span>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <Wind className="h-3 w-3 sm:h-4 sm:w-4 text-cyan-400 flex-shrink-0" />
+              <span className="truncate">{slot.windSpeed.toFixed(0)} km/h {windDir}</span>
             </div>
-            <div className="flex items-center gap-2 text-slate-400">
-              <Gauge className="h-4 w-4 text-orange-400" />
-              <span>Böen {slot.windGust?.toFixed(0) ?? "-"} km/h</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 text-slate-400">
+              <Gauge className="h-3 w-3 sm:h-4 sm:w-4 text-orange-400 flex-shrink-0" />
+              <span className="truncate">Böen {slot.windGust?.toFixed(0) ?? "-"}</span>
             </div>
           </div>
         </div>
 
-        <div className="flex items-start gap-3 pt-3 border-t border-white/10">
-          <span className="text-2xl">{rideability.emoji}</span>
-          <div className="flex-1">
-            <p className={`font-semibold ${accentColor}`}>{rideability.label}</p>
-            {rideability.advice && <p className="text-sm text-slate-400 mt-1">{rideability.advice}</p>}
-            {clothingAdvice && <p className="text-sm text-slate-500 mt-2 italic">{clothingAdvice}</p>}
+        {/* Rideability - kompakter */}
+        <div className="flex items-start gap-2 sm:gap-3 pt-2 sm:pt-3 border-t border-white/10">
+          <span className="text-xl sm:text-2xl leading-none">{rideability.emoji}</span>
+          <div className="flex-1 min-w-0">
+            <p className={`font-semibold text-sm sm:text-base ${accentColor}`}>{rideability.label}</p>
+            {rideability.advice && (
+              <p className="text-xs sm:text-sm text-slate-400 mt-0.5 sm:mt-1 line-clamp-2">
+                {rideability.advice}
+              </p>
+            )}
+            {clothingAdvice && (
+              <p className="text-xs text-slate-500 mt-1 sm:mt-2 italic line-clamp-1">
+                {clothingAdvice}
+              </p>
+            )}
           </div>
         </div>
       </CardContent>
