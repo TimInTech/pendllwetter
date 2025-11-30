@@ -1,4 +1,5 @@
 import type { GeoLocation, DWDForecastResponse, CurrentWeather, HourlyForecast } from "./types"
+import type { OpenMeteoParaglidingResponse } from "./types-paragliding"
 
 export interface GeoSearchResult {
   name: string
@@ -255,4 +256,150 @@ export function getWeatherIcon(code: number, isDay = true): string {
   if (code <= 86) return "cloud-snow"
   if (code >= 95) return "cloud-lightning"
   return "cloud"
+}
+
+// ============================================================================
+// PROFESSIONAL PARAGLIDING WEATHER API
+// ============================================================================
+
+/**
+ * Fetches extended atmospheric data for paragliding analysis
+ * Includes CAPE, lifted index, boundary layer height, and detailed wind profile
+ * 
+ * Data Source: Open-Meteo API (free, no API key required)
+ * Documentation: https://open-meteo.com/en/docs
+ * 
+ * @param lat Latitude
+ * @param lon Longitude
+ * @param hours Number of forecast hours (default: 24)
+ * @returns Extended forecast with atmospheric parameters
+ */
+export async function fetchParaglidingWeather(
+  lat: number,
+  lon: number,
+  hours: number = 24
+): Promise<OpenMeteoParaglidingResponse> {
+  const params = new URLSearchParams({
+    latitude: lat.toString(),
+    longitude: lon.toString(),
+    hourly: [
+      // Temperature profile
+      "temperature_2m",
+      "temperature_80m",
+      "temperature_950hPa",
+      "dewpoint_2m",
+      "relative_humidity_2m",
+      
+      // Wind profile (critical for paragliding)
+      "wind_speed_10m",
+      "wind_speed_80m",
+      "wind_speed_120m",
+      "wind_direction_10m",
+      "wind_direction_80m",
+      "wind_direction_120m",
+      "wind_gusts_10m",
+      
+      // Atmospheric stability (CAPE, LI)
+      "cape", // Convective Available Potential Energy
+      "lifted_index", // Stability indicator
+      "convective_inhibition", // CIN
+      
+      // Boundary layer
+      "boundary_layer_height",
+      
+      // Clouds
+      "cloud_cover",
+      "cloud_cover_low",
+      "cloud_cover_mid",
+      "cloud_cover_high",
+      
+      // Precipitation
+      "precipitation",
+      
+      // Pressure
+      "surface_pressure",
+      "pressure_msl",
+    ].join(","),
+    timezone: "Europe/Berlin",
+    forecast_hours: hours.toString(),
+  })
+
+  const url = `https://api.open-meteo.com/v1/forecast?${params}`
+  const response = await fetch(url)
+
+  if (!response.ok) {
+    throw new Error(`Paragliding-Wetterdaten konnten nicht abgerufen werden: ${response.statusText}`)
+  }
+
+  return response.json()
+}
+
+/**
+ * Fetches Windy forecast data (ECMWF/ICON/GFS models)
+ * 
+ * TODO: Requires Windy API key
+ * API: https://api.windy.com
+ * 
+ * @param lat Latitude
+ * @param lon Longitude
+ * @param model Model type (ecmwf, gfs, icon)
+ */
+export async function fetchWindyForecast(
+  lat: number,
+  lon: number,
+  model: "ecmwf" | "gfs" | "icon" = "ecmwf"
+): Promise<unknown> {
+  // TODO: Implement when Windy API key is available
+  // const apiKey = process.env.NEXT_PUBLIC_WINDY_API_KEY
+  // const url = `https://api.windy.com/api/point-forecast/v2?lat=${lat}&lon=${lon}&model=${model}&key=${apiKey}`
+  
+  throw new Error("Windy API not yet configured. Add NEXT_PUBLIC_WINDY_API_KEY to .env.local")
+}
+
+/**
+ * Fetches DHV Flugwetter (German Hang Gliding Association weather)
+ * 
+ * TODO: Implement HTML parser or use API if available
+ * Source: https://www.dhv.de/web/piloteninfos/wetter/
+ * 
+ * @param region Region code (e.g., "nrw", "bayern")
+ */
+export async function fetchDHVFlugwetter(region: string = "nrw"): Promise<unknown> {
+  // TODO: Implement DHV scraper or API integration
+  // const url = `https://www.dhv.de/web/piloteninfos/wetter/${region}/`
+  
+  throw new Error("DHV Flugwetter integration not yet implemented")
+}
+
+/**
+ * Merges multiple weather sources into unified paragliding forecast
+ * Priority: Open-Meteo (base) → Windy (if available) → DHV (if available)
+ * 
+ * @param lat Latitude
+ * @param lon Longitude
+ */
+export async function fetchMergedParaglidingData(
+  lat: number,
+  lon: number
+): Promise<OpenMeteoParaglidingResponse> {
+  // Start with Open-Meteo as base (always available)
+  const openMeteoData = await fetchParaglidingWeather(lat, lon)
+
+  // TODO: Merge with Windy data if API key is configured
+  try {
+    // const windyData = await fetchWindyForecast(lat, lon)
+    // Merge wind profile and turbulence data
+  } catch {
+    // Windy not available, continue with Open-Meteo only
+  }
+
+  // TODO: Merge with DHV data if available
+  try {
+    // const dhvData = await fetchDHVFlugwetter()
+    // Add regional warnings and recommendations
+  } catch {
+    // DHV not available, continue
+  }
+
+  return openMeteoData
 }

@@ -75,12 +75,14 @@ export function LocationProvider({ children }: { children: ReactNode }) {
   }, [location])
 
   const updateFromGPS = useCallback(async (): Promise<LocationState | null> => {
+    // Prevent duplicate GPS requests
     if (gpsRequestRef.current) {
       return gpsRequestRef.current
     }
 
+    // Check if geolocation is available
     if (!navigator.geolocation) {
-      setError("Geolocation wird von Ihrem Browser nicht unterstützt.")
+      setError("Browser-GPS nicht verfügbar. Bitte manuellen Standort eingeben.")
       return null
     }
 
@@ -93,14 +95,22 @@ export function LocationProvider({ children }: { children: ReactNode }) {
           const { latitude, longitude } = position.coords
           let name = "Aktueller Standort"
 
+          // Reverse geocode via our API route (avoids CORS)
           try {
-            const response = await fetch(
-              `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${latitude}&longitude=${longitude}&language=de`,
-            )
-            const data = await response.json()
-            name = data.results?.[0]?.name || name
-          } catch {
-            // ignore lookup errors, fall back to default label
+            const response = await fetch(`/api/geocode?lat=${latitude}&lon=${longitude}`)
+            
+            if (response.ok) {
+              const data = await response.json()
+              // Build label from returned data
+              const parts = [data.name]
+              if (data.admin1) parts.push(data.admin1)
+              name = parts.join(", ")
+            } else {
+              console.warn("Geocoding failed, using default label")
+            }
+          } catch (error) {
+            console.warn("Geocoding error:", error)
+            // Fallback to default label
           }
 
           const newLocation: LocationState = {
@@ -118,25 +128,32 @@ export function LocationProvider({ children }: { children: ReactNode }) {
         },
         (err) => {
           setIsLoading(false)
+          
+          // Handle geolocation errors with clear messages
           switch (err.code) {
             case err.PERMISSION_DENIED:
               setError(
-                "Standortzugriff wurde verweigert. Bitte Standortfreigabe im Browser aktivieren oder PLZ/Ort eingeben.",
+                "Browser-GPS blockiert. Bitte Standortfreigabe prüfen oder manuellen Ort eingeben.",
               )
               break
             case err.POSITION_UNAVAILABLE:
-              setError("Standortinformationen sind nicht verfügbar.")
+              setError("GPS-Position nicht verfügbar. Bitte manuellen Ort eingeben.")
               break
             case err.TIMEOUT:
-              setError("Zeitüberschreitung bei der Standortabfrage.")
+              setError("GPS-Zeitüberschreitung. Bitte erneut versuchen oder manuellen Ort eingeben.")
               break
             default:
-              setError("Ein unbekannter Fehler ist aufgetreten.")
+              setError("GPS-Fehler aufgetreten. Bitte manuellen Ort eingeben.")
           }
+          
           gpsRequestRef.current = null
           resolve(null)
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
+        { 
+          enableHighAccuracy: true, 
+          timeout: 10000, 
+          maximumAge: 60000,
+        },
       )
     })
 

@@ -1,26 +1,26 @@
 "use client"
 
 import { useState } from "react"
-import { Cloud, Bike, MapPin, Settings, Database, Coffee, Globe } from "lucide-react"
+import { Cloud, Activity, MapPin, Settings, Database, Coffee, Globe, Bike } from "lucide-react"
 import { NowView } from "@/components/views/now-view"
-import { CommuteView } from "@/components/views/commute-view"
+import { ActivitiesView } from "@/components/views/activities-view"
 import { RadarView } from "@/components/views/radar-view"
 import { SettingsView } from "@/components/views/settings-view"
 import { loadSettings, saveSettings } from "@/lib/storage"
 import { LocationProvider } from "@/lib/location-store"
 import type { Settings as AppSettings } from "@/lib/types"
 
-type TabId = "jetzt" | "pendeln" | "radar" | "einstellungen"
+type TabId = "übersicht" | "aktivitäten" | "radar" | "einstellungen"
 
 const tabs = [
-  { id: "jetzt" as const, label: "Jetzt", icon: Cloud },
-  { id: "pendeln" as const, label: "Pendeln", icon: Bike },
+  { id: "übersicht" as const, label: "Übersicht", icon: Cloud },
+  { id: "aktivitäten" as const, label: "Aktivitäten", icon: Activity },
   { id: "radar" as const, label: "Radar", icon: MapPin },
   { id: "einstellungen" as const, label: "Einstellungen", icon: Settings },
 ]
 
 export function AppShell() {
-  const [activeTab, setActiveTab] = useState<TabId>("jetzt")
+  const [activeTab, setActiveTab] = useState<TabId>("übersicht")
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings())
 
   // Save settings when changed
@@ -32,9 +32,9 @@ export function AppShell() {
 
   return (
     <LocationProvider>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#131F49] to-[#04102B]">
         {/* Header */}
-        <header className="sticky top-0 z-50 bg-[#0a0f1e]/80 backdrop-blur-xl border-b border-white/10">
+        <header className="sticky top-0 z-50 bg-[#131F49]/80 backdrop-blur-xl border-b border-white/10">
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
               {/* Left: Support Button */}
@@ -82,15 +82,15 @@ export function AppShell() {
 
         {/* Main Content */}
         <main className="flex-1 container mx-auto px-4 py-6 pb-24 overflow-x-hidden">
-          {activeTab === "jetzt" && <NowView settings={settings} />}
-          {activeTab === "pendeln" && <CommuteView settings={settings} onSettingsChange={updateSettings} />}
+          {activeTab === "übersicht" && <NowView settings={settings} onNavigate={setActiveTab} />}
+          {activeTab === "aktivitäten" && <ActivitiesView settings={settings} onSettingsChange={updateSettings} />}
           {activeTab === "radar" && <RadarView settings={settings} />}
           {activeTab === "einstellungen" && <SettingsView settings={settings} onSettingsChange={updateSettings} />}
         </main>
 
         {/* Bottom Navigation - Mobile Optimized */}
         <nav
-          className="fixed bottom-0 left-0 right-0 z-50 bg-[#0a0f1e]/90 backdrop-blur-xl border-t border-white/10 safe-area-inset-bottom"
+          className="fixed bottom-0 left-0 right-0 z-50 bg-[#04102B]/90 backdrop-blur-xl border-t border-white/10 safe-area-inset-bottom"
           role="navigation"
           aria-label="Hauptnavigation"
         >
@@ -107,7 +107,7 @@ export function AppShell() {
                   <button
                     key={tab.id}
                     role="tab"
-                    aria-selected={isActive ? true : false}
+                    aria-selected={isActive}
                     aria-controls={`panel-${tab.id}`}
                     id={`tab-${tab.id}`}
                     onClick={() => setActiveTab(tab.id)}

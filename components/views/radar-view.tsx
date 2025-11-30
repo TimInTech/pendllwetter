@@ -96,10 +96,10 @@ export function RadarView({ settings: _settings }: RadarViewProps) {
       {/* Windy Radar Map */}
       <Card className="bg-white/5 backdrop-blur-xl border-white/10 overflow-hidden">
         <CardContent className="p-0">
-          <div className="relative w-full" style={{ height: "min(65vh, 500px)" }}>
+          <div className="relative w-full h-[min(65vh,500px)]">
             <iframe
               src={windyUrl}
-              style={{ width: "100%", height: "100%", border: "none" }}
+              className="w-full h-full border-0"
               title="Windy Radar"
               allowFullScreen
             />
